@@ -6,6 +6,7 @@ import Home from "./components/Home";
 import Mentorship from "./components/Mentorship"
 import Prof from "./components/Prof";
 import Messages from "./components/Messages";
+import Login from "./components/Login";
 
 function App() {
 
@@ -30,7 +31,7 @@ function App() {
             <NavLink to="/database" className="nav-item">Directory</NavLink>
             <NavLink to="/profile" className="nav-item">Profile</NavLink>
             <NavLink to="/messages" className="nav-item">Messages</NavLink>
-          
+            <NavLink to="/login" className="nav-item">Login</NavLink>
           </nav>
           </div>
         </div>
@@ -42,6 +43,7 @@ function App() {
             <Route path="/database" element={<Directory />} />
             <Route path="/profile" element={<Prof />} />
             <Route path="/messages" element={<Messages />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
         </div>
       </div>
