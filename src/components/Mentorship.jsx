@@ -1,19 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import "../App.css";
+import { MentBox } from "./components";
 
 function Mentorship() {
+
+  const [activeSection, setActiveSection] = useState(null);
+
+  const handleFindMentorsClick = () => {
+    setActiveSection(activeSection === "find" ? null : "find");
+  };
+
+  const handleCurrentMentorClick = () => {
+    setActiveSection(activeSection === "current" ? null : "current");
+  };
+
+  const handlePendingMentorClick = () => {
+    setActiveSection(activeSection === "pending" ? null : "pending");
+  };
+
   return (
     <CenterWrapper>
 
       <MentBox>
-        {/* Mentoring */}
-        <MentButton>Find a Mentor</MentButton>
-        <MentButton>Current Mentor</MentButton>
-        <MentButton>Pending Mentors</MentButton>
-
-
+        <MentButton onClick={handleFindMentorsClick}>Find a Mentor</MentButton>
+        <MentButton onClick={handleCurrentMentorClick}>Current Mentor</MentButton>
+        <MentButton onClick={handlePendingMentorClick}>Pending Mentors</MentButton>
       </MentBox>
+
+      {activeSection === "find" && (
+        <MentBox>Mentor Information</MentBox>
+      )}
+
+      {activeSection === "current" && (
+        <MentBox>Current Mentor info</MentBox>
+      )}
+
+      {activeSection === "pending" && (
+        <MentBox>Your pending mentor</MentBox>
+      )}
+
     </CenterWrapper>
   );
 }
@@ -27,29 +53,19 @@ const MentButton = styled.button`
   margin-right: 15px; /* Adds space between the buttons */
   padding: 10px 20px;
   width: auto; 
+  
+  &:hover{ 
+  text-decoration: underline;
+  }
 
 `;
 
 const CenterWrapper = styled.div`
   display: flex;
-  justify-content: center;
+flex-direction: column;
   align-items: center;
 `;
 
-const MentBox = styled.div`
-  border-radius: 10px;
-  background-color: white;
-  color: #a4243c;
-  font-size: 18px;
-  width: 80%;
-  padding: 20px;
-  margin-top: 20px;
-  border: none;
-  box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2);
-  text-align: center; 
-  display: flex; 
-  justify-content: center;  
-  gap: 15px;  
-`;
-
 export default Mentorship;
+
+

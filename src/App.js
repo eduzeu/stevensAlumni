@@ -3,7 +3,7 @@ import './App.css';
 import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
 import Directory from "./components/Directory";
 import Home from "./components/Home";
-import Mentorship from "./components/Mentorship";
+import Mentorship from "./components/Mentorship"
 import Prof from "./components/Prof";
 import Messages from "./components/Messages";
 
