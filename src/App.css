@@ -1,13 +1,29 @@
 .App {
   text-align: center;
   height: 100vh;
+  background-color: lightgray;
+  width: 100%;
+  overflow-x: hidden;
 
 }
 
+
 .separator {
   border: none;
-  margin: 20px 0;
+  /* margin: 20px 0; */
   background-color: #2f3237;
+  color: rgb(242, 235, 235);
+  padding: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.appbar {
+  border: none;
+  /* margin: 20px 0; */
+  background-color: #a4243c;
   color: rgb(242, 235, 235);
   padding: 10px;
   width: 100%;
@@ -41,9 +57,9 @@
 }
 
 .stevens-logo {
-  width: 10%;
+  width: 15%;
   height: auto;
-  margin-left: 80%;
+  margin-left: 70%;
   background-color: white;
   padding: 10px;
   box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4);
@@ -53,6 +69,8 @@
 .title {
   text-align: center;
   margin-right: auto;
+  font-size: 40px;
+  white-space: nowrap;
 }
 
 /* Style for NavLinks */
@@ -63,7 +81,7 @@
 }
 
 .navbar .nav-item {
-  color: red;
+  color: white;
   text-decoration: none;
   padding: 10px 20px;
   font-size: 18px;
