@@ -1,6 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
-import { users } from "./config/mongoCollections";
+import { users } from "./config/mongoCollections.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 let userCollection = await users();
@@ -43,7 +43,6 @@ app.post("/api/createAccount", async (req, res) => {
   const {
     email,
     password,
-    alumniId,
     fullName,
     gradYear,
     major,
@@ -51,8 +50,7 @@ app.post("/api/createAccount", async (req, res) => {
     company,
     linkedIn,
     location,
-    mentoring,
-    donate
+    mentoring
     } = req.body;
   let alreadyExists = userCollection.findOne({email: email});
   if(alreadyExists){
@@ -62,7 +60,6 @@ app.post("/api/createAccount", async (req, res) => {
   let today = new Date();
   today.setHours(0, 0, 0, 0);
   let userObj = {
-    "Alumni Id": alumniId,
     "Full Name": fullName,
     "Graduation Year": gradYear,
     "Major": major,
@@ -72,7 +69,6 @@ app.post("/api/createAccount", async (req, res) => {
     "LinkedIn Profile": linkedIn,
     "Location": location,
     "Interested in Mentoring?": mentoring,
-    "Willing to Donate": donate,
     "Last Updated": today,
     "Password": hashedPass,
     "Mentorees": [],

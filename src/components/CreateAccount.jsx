@@ -16,7 +16,8 @@ function CreateAccount() {
     company: "",
     linkedin: "",
     location: "",
-    mentoring: ""
+    mentoring: "",
+    major: ""
   });
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -37,7 +38,7 @@ function CreateAccount() {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/createaccount", formData);
+      const response = await axios.post("http://localhost:5000/api/createAccount", formData);
       console.log(response.data.message);
       alert("Account created successfully!");
     } catch (error) {
@@ -106,6 +107,14 @@ function CreateAccount() {
             name="company"
             placeholder="If you are a student, leave blank"
             value={formData.company}
+            onChange={handleChange}
+          />
+          <Label>Major</Label>
+          <Input
+            type="text"
+            name="major"
+            placeholder="Enter your major"
+            value={formData.major}
             onChange={handleChange}
           />
           <Label>LinkedIn Profile</Label>
