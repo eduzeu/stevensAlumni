@@ -36,7 +36,7 @@ app.get("/", (req, res) => {
 app.post("/api/login", async (req, res) => {
   const {email, password} = req.body;
   console.log(email, password);
-  let user = userCollection.findOne({email: email});
+  let user = await userCollection.findOne({email: email});
   let compare = await bcrypt.compare(password, user.password);
   if(!user || compare) {
     return res.status(401).json({message: 'Invalid Login'});
@@ -90,17 +90,17 @@ app.post("/api/createAccount", async (req, res) => {
 });
 
 app.get("/api/getAllMentors", async (req, res) => {
-  let allUsers = userCollection.find({"Interested in Mentoring?": true}).toArray();
+  let allUsers = await userCollection.find({"Interested in Mentoring?": true}).toArray();
   return res.json({users: allUsers});
 });
 
 app.get("/api/getAllUsers", async (req, res) => {
-  let allUsers = userCollection.find({}).toArray();
+  let allUsers = await userCollection.find({}).toArray();
   return res.json({users: allUsers});
 });
 
 app.get("/api/getAllActiveMentors", async (req, res) => {
-  let mentors = userCollection.find({$expr: { $gte: [{ $size: "$Mentorees" }, 1]}}).toArray();
+  let mentors = await userCollection.find({$expr: { $gte: [{ $size: "$Mentorees" }, 1]}}).toArray();
   return res.json({users: mentors});
 });
 
