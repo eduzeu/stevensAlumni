@@ -122,8 +122,45 @@ app.post("/api/acceptMentoree/:mentoreeId", authenticateToken, async (req, res) 
   return res.json({message: "Update Ok"});
 });
 
+app.post("/api/rejectMentoree/:mentoreeId", authenticateToken, async (req, res) => {
+  let currUser = req.user;
+  const {mentoreeId} = req.params;
+  let user = await userCollection.findOne({_id: currUser._id});
+  user["IncomingRequests"] = user["IncomingRequests"].filter(request => request.toString() != mentoreeId);
+  let updated = await userCollection.findOneAndReplace({_id: currUser._id}, user);
+  if(!updated){
+    return res.status(403).json({message: "Error updating collection"});
+  }
+  let mentoree = await userCollection.findOne({_id: new ObejctId(mentoreeId)});
+  mentoree["OutgoingRequests"] = user["OutgoingRequests"].filter(request => request != currUser._id);
+  let updatedMentoree = await userCollection.findOneAndReplace({_id: new ObjectId(mentoreeId)}, mentoree);
+  if(!updatedMentoree){
+    return res.status(403).json({message: "Error updating collection"});
+  }
+  return res.json({message: "Update Ok"});
+});
 
+app.get("/api/getCurrentMentors", authenticateToken, async (req, res) => {
+  let currUser = req.user;
+  let userObj = await userCollection.findOne({_id: currUser._id});
+  let mentors = userObj["Mentors"];
+  if(mentors.length < 1){
+    return res.json({mentors: []});
+  }
+  let mentorObjs = await userCollection.find({_id: {$in: mentors}});
+  return res.json({mentors: mentorObjs});
+});
 
+app.get("/api/getCurrentMentorees", authenticateToken, async (req, res) => {
+  let currUser = req.user;
+  let userObj = await userCollection.findOne({_id: currUser._id});
+  let mentors = userObj["Mentorees"];
+  if(mentors.length < 1){
+    return res.json({mentors: []});
+  }
+  let mentorObjs = await userCollection.find({_id: {$in: mentors}});
+  return res.json({mentors: mentorObjs});
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
