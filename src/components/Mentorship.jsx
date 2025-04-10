@@ -57,37 +57,39 @@ function Mentorship() {
         <MentBox>Mentor Information</MentBox>
       )} */}
       {activeSection === "find" && (
-        <MentBox>
+        <div>
           {loading ? (
             <p>Loading mentors...</p>
           ) : error ? (
             <p>{error}</p>
           ) : mentors.length > 0 ? (
             mentors.map((mentor, index) => (
-              <div key={index} style={{ 
-                border: "1px solid #ddd", 
-                borderRadius: "10px", 
-                padding: "15px", 
-                marginBottom: "15px", 
-                width: "100%", 
-                maxWidth: "500px",
+              <div key={index} style={{
+                border: "1px solid #ddd",
+                borderRadius: "10px",
+                padding: "15px",
+                width: "90%",
+                // maxWidth: "1000%",
                 boxShadow: "0px 2px 5px rgba(0,0,0,0.1)",
-                backgroundColor: "#fafafa"
+                backgroundColor: "#fafafa",
+                display: "block",
+                margin: "15px auto 20px auto"
               }}>
                 <h3 style={{ marginBottom: "5px" }}>{mentor["Full Name"]}</h3>
-                <p><strong>Job:</strong> {mentor["Job Title"]} at {mentor["Company"]}</p>
-                <p><strong>Graduation Year:</strong> {mentor["Graduation Year"]}</p>
-                <p><strong>Major:</strong> {mentor["Major"]}</p>
-                <p><strong>Location:</strong> {mentor["Location"]}</p>
-                <p><strong>Email:</strong> <a href={`mailto:${mentor.Email}`}>{mentor.Email}</a></p>
-                <p><strong>LinkedIn:</strong> <a href={`https://${mentor["LinkedIn Profile"]}`} target="_blank" rel="noopener noreferrer">{mentor["LinkedIn Profile"]}</a></p>
+                <p style={{ marginBottom: "5px" }}><strong>Job:</strong> {mentor["Job Title"]} at {mentor["Company"]}</p>
+                <p style={{ marginBottom: "5px" }}><strong>Graduation Year:</strong> {mentor["Graduation Year"]}</p>
+                <p style={{ marginBottom: "5px" }}><strong>Major:</strong> {mentor["Major"]}</p>
+                <p style={{ marginBottom: "5px" }}><strong>Location:</strong> {mentor["Location"]}</p>
+                <p style={{ marginBottom: "5px" }}><strong>LinkedIn:</strong> <a href={`https://${mentor["LinkedIn Profile"]}`} target="_blank" rel="noopener noreferrer">{mentor["LinkedIn Profile"]}</a></p>
+                <RequestButton>Send Request</RequestButton>
               </div>
+          
             ))
-            
           ) : (
             <p>No mentors found.</p>
           )}
-        </MentBox>
+        </div>
+
       )}
 
       
@@ -125,6 +127,25 @@ const CenterWrapper = styled.div`
 flex-direction: column;
   align-items: center;
 `;
+
+const RequestButton = styled.button`
+  margin-top: 10px;
+  background-color: #a4243c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  padding: 8px 16px;
+  cursor: pointer;
+  align-self: center;
+  width: fit-content;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 
 export default Mentorship;
 
