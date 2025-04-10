@@ -39,12 +39,13 @@ function CreateAccount() {
 
     try {
       const response = await axios.post("http://localhost:5000/api/createAccount", formData);
-      console.log(response.data.message);
+      console.log(response.data.message); // Success message
       alert("Account created successfully!");
     } catch (error) {
-      console.error("There was an error creating the account:", error);
-      alert("Error creating account.");
+      console.error("There was an error creating the account:", error.response.data);
+      alert("Error creating account: " + error.response.data.message); // Display detailed error message
     }
+
   };
 
   return (

@@ -3,11 +3,17 @@ import dotenv from "dotenv";
 import { users } from "./config/mongoCollections.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import cors from 'cors';
 let userCollection = await users();
 let saltrounds = 10;
 
 const app = express();
 
+app.use(cors({
+  origin: 'http://localhost:3000', // Allow requests from this origin (React dev server)
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Allowed HTTP methods
+  credentials: true // If you need to include credentials (cookies, etc.)
+}));
 app.use(express.json()); 
 
 const authenticateToken = (req, res, next) => {
@@ -52,11 +58,11 @@ app.post("/api/createAccount", async (req, res) => {
     location,
     mentoring
     } = req.body;
-  let alreadyExists = userCollection.findOne({email: email});
+  let alreadyExists = await userCollection.findOne({email: email});
   if(alreadyExists){
     return res.status(400).json({message: 'User with this email already exists'});
   }
-  let hashedPass = await bcrypt.hash(password);
+  let hashedPass = await bcrypt.hash(password, saltrounds);
   let today = new Date();
   today.setHours(0, 0, 0, 0);
   let userObj = {
@@ -76,7 +82,7 @@ app.post("/api/createAccount", async (req, res) => {
     "IncomingRequests": [],
     "OutgoingRequests": []
   }
-  let inserted = userCollection.insertOne(userObj);
+  let inserted = await userCollection.insertOne(userObj);
   if(!inserted.acknowledged){
     return res.status(403).json({message: "Server error, could not create account"});
   }
