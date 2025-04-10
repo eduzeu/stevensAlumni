@@ -17,8 +17,8 @@ function Login() {
       <MessageBox>
         <Form>
           <Title>Sign In</Title>
-          <Label>Username</Label>
-          <Input type="text" name="username" placeholder="Enter your username" />
+          <Label>Email</Label>
+          <Input type="text" name="email" placeholder="Enter your email" />
           <Label>Password</Label>
           <Input type="password" name="password" placeholder="Enter your password" />
           <SignInButton>Sign In</SignInButton>

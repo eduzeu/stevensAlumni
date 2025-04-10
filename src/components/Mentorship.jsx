@@ -4,21 +4,16 @@ import "../App.css";
 import { MentBox } from "./components";
 
 function Mentorship() {
-
   const [activeSection, setActiveSection] = useState(null);
-
   const [mentors, setMentors] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [pendingMentor, setPendingMentor] = useState(null);  // Track the mentor selected for pending request
 
-
-  // const handleFindMentorsClick = () => {
-  //   setActiveSection(activeSection === "find" ? null : "find");
-  // };
   const handleFindMentorsClick = async () => {
     const newActive = activeSection === "find" ? null : "find";
     setActiveSection(newActive);
-  
+
     if (newActive === "find") {
       setLoading(true);
       setError(null);
@@ -34,28 +29,24 @@ function Mentorship() {
       }
     }
   };
-  
 
   const handleCurrentMentorClick = () => {
     setActiveSection(activeSection === "current" ? null : "current");
   };
 
-  const handlePendingMentorClick = () => {
-    setActiveSection(activeSection === "pending" ? null : "pending");
+  const handlePendingMentorClick = (mentor) => {
+    setActiveSection("pending");
+    setPendingMentor(mentor);  // Store the selected mentor in the state
   };
 
   return (
     <CenterWrapper>
-
       <MentBox>
         <MentButton onClick={handleFindMentorsClick}>Find a Mentor</MentButton>
         <MentButton onClick={handleCurrentMentorClick}>Current Mentor</MentButton>
         <MentButton onClick={handlePendingMentorClick}>Pending Mentors</MentButton>
       </MentBox>
 
-      {/* {activeSection === "find" && (
-        <MentBox>Mentor Information</MentBox>
-      )} */}
       {activeSection === "find" && (
         <div>
           {loading ? (
@@ -64,44 +55,48 @@ function Mentorship() {
             <p>{error}</p>
           ) : mentors.length > 0 ? (
             mentors.map((mentor, index) => (
-              <div key={index} style={{
-                border: "1px solid #ddd",
-                borderRadius: "10px",
-                padding: "15px",
-                width: "90%",
-                // maxWidth: "1000%",
-                boxShadow: "0px 2px 5px rgba(0,0,0,0.1)",
-                backgroundColor: "#fafafa",
-                display: "block",
-                margin: "15px auto 20px auto"
-              }}>
+              <div
+                key={index}
+                style={{
+                  border: "1px solid #ddd",
+                  borderRadius: "10px",
+                  padding: "15px",
+                  width: "90%",
+                  boxShadow: "0px 2px 5px rgba(0,0,0,0.1)",
+                  backgroundColor: "#fafafa",
+                  display: "block",
+                  margin: "15px auto 20px auto"
+                }}
+              >
                 <h3 style={{ marginBottom: "5px" }}>{mentor["Full Name"]}</h3>
                 <p style={{ marginBottom: "5px" }}><strong>Job:</strong> {mentor["Job Title"]} at {mentor["Company"]}</p>
                 <p style={{ marginBottom: "5px" }}><strong>Graduation Year:</strong> {mentor["Graduation Year"]}</p>
                 <p style={{ marginBottom: "5px" }}><strong>Major:</strong> {mentor["Major"]}</p>
                 <p style={{ marginBottom: "5px" }}><strong>Location:</strong> {mentor["Location"]}</p>
                 <p style={{ marginBottom: "5px" }}><strong>LinkedIn:</strong> <a href={`https://${mentor["LinkedIn Profile"]}`} target="_blank" rel="noopener noreferrer">{mentor["LinkedIn Profile"]}</a></p>
-                <RequestButton>Send Request</RequestButton>
+                <RequestButton onClick={() => handlePendingMentorClick(mentor)}>Send Request</RequestButton>
               </div>
-          
             ))
           ) : (
             <p>No mentors found.</p>
           )}
         </div>
-
       )}
-
-      
 
       {activeSection === "current" && (
         <MentBox>Current Mentor info</MentBox>
       )}
 
-      {activeSection === "pending" && (
-        <MentBox>Your pending mentor</MentBox>
+      {activeSection === "pending" && pendingMentor && (
+        <MentBox>
+          <h3>{pendingMentor["Full Name"]}</h3>
+          <p><strong>Job:</strong> {pendingMentor["Job Title"]} at {pendingMentor["Company"]}</p>
+          <p><strong>Graduation Year:</strong> {pendingMentor["Graduation Year"]}</p>
+          <p><strong>Major:</strong> {pendingMentor["Major"]}</p>
+          <p><strong>Location:</strong> {pendingMentor["Location"]}</p>
+          <p><strong>LinkedIn:</strong> <a href={`https://${pendingMentor["LinkedIn Profile"]}`} target="_blank" rel="noopener noreferrer">{pendingMentor["LinkedIn Profile"]}</a></p>
+        </MentBox>
       )}
-
     </CenterWrapper>
   );
 }
@@ -115,16 +110,15 @@ const MentButton = styled.button`
   margin-right: 15px; /* Adds space between the buttons */
   padding: 10px 20px;
   width: auto; 
-  
-  &:hover{ 
-  text-decoration: underline;
-  }
 
+  &:hover{ 
+    text-decoration: underline;
+  }
 `;
 
 const CenterWrapper = styled.div`
   display: flex;
-flex-direction: column;
+  flex-direction: column;
   align-items: center;
 `;
 
@@ -146,7 +140,4 @@ const RequestButton = styled.button`
   }
 `;
 
-
 export default Mentorship;
-
-
