@@ -13,4 +13,4 @@ const getCollectionFn = (collection) => {
   };
 };
 
-export const artists = getCollectionFn("users");
+export const users = getCollectionFn("users");
