@@ -4,6 +4,7 @@ import { users } from "./config/mongoCollections.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import cors from 'cors';
+import { ObjectId } from "mongodb";
 let userCollection = await users();
 let saltrounds = 10;
 
@@ -19,7 +20,6 @@ app.use(express.json());
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // 'Bearer <token>'
-
   if (!token) return res.sendStatus(401);
 
   jwt.verify(token, 'secret_key', (err, user) => {
@@ -36,9 +36,14 @@ app.get("/", (req, res) => {
 app.post("/api/login", async (req, res) => {
   const {email, password} = req.body;
   console.log(email, password);
-  let user = await userCollection.findOne({email: email});
-  let compare = await bcrypt.compare(password, user.password);
-  if(!user || compare) {
+  let user = await userCollection.findOne({Email: email});
+  if(!user){
+    console.log("no user");
+    return res.status(401).json({message: 'Invalid Login'});
+  }
+  let compare = await bcrypt.compare(password, user.Password);
+  if(!user || !compare) {
+    console.log("bad pass");
     return res.status(401).json({message: 'Invalid Login'});
   }
   const token = jwt.sign({ _id: user._id, email: user.email }, 'secret_key');
@@ -144,7 +149,10 @@ app.post("/api/rejectMentoree/:mentoreeId", authenticateToken, async (req, res) 
 
 app.get("/api/getCurrentMentors", authenticateToken, async (req, res) => {
   let currUser = req.user;
-  let userObj = await userCollection.findOne({_id: currUser._id});
+  let userObj = await userCollection.findOne({_id: new ObjectId(currUser._id)});
+  if(!userObj){
+    return res.status(401).json({message: "No matching user"});
+  }
   let mentors = userObj["Mentors"];
   if(mentors.length < 1){
     return res.json({mentors: []});
@@ -155,7 +163,7 @@ app.get("/api/getCurrentMentors", authenticateToken, async (req, res) => {
 
 app.get("/api/getCurrentMentorees", authenticateToken, async (req, res) => {
   let currUser = req.user;
-  let userObj = await userCollection.findOne({_id: currUser._id});
+  let userObj = await userCollection.findOne({_id: new ObjectId(currUser._id)});
   let mentors = userObj["Mentorees"];
   if(mentors.length < 1){
     return res.json({mentors: []});
