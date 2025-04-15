@@ -32,7 +32,7 @@ function Login() {
     e.preventDefault();
     try {
       const response = await axios.post("http://localhost:5000/api/login", formData, { timeout: 5000 });
-      console.log(response); // Success message
+      console.log(response);
       const token = response.data.token;
       sessionStorage.setItem('sessionToken', token);
       console.log(sessionStorage.getItem('sessionToken'));

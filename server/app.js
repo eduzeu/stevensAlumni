@@ -14,7 +14,7 @@ app.use(cors({
   origin: 'http://localhost:3000', // Allow requests from this origin (React dev server)
   methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Allowed HTTP methods
   credentials: true // If you need to include credentials (cookies, etc.)
-}));
+})); 
 app.use(express.json()); 
 
 const authenticateToken = (req, res, next) => {
@@ -94,8 +94,13 @@ app.post("/api/createAccount", async (req, res) => {
   return res.json({message: "Account created successfully"});
 });
 
-app.get("/api/getAllMentors", async (req, res) => {
-  let allUsers = await userCollection.find({"Interested in Mentoring?": true}).toArray();
+app.get("/api/getAllMentors", authenticateToken, async (req, res) => {
+  let user = req.user;
+  console.log(user);
+  let currUser = await userCollection.findOne({_id: new ObjectId(user._id)});
+  let excludedIds = [...currUser["OutgoingRequests"], ...currUser["Mentors"]];
+  let allUsers = await userCollection.find({_id: {$nin: excludedIds}}).toArray();
+  allUsers = allUsers.filter(oneUser => oneUser._id )
   return res.json({users: allUsers});
 });
 
