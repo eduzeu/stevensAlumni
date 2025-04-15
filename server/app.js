@@ -25,6 +25,7 @@ const authenticateToken = (req, res, next) => {
   jwt.verify(token, 'secret_key', (err, user) => {
     if (err) return res.sendStatus(403);
     req.user = user; // Store the decoded user info in req
+    console.log(user);
     next();
   });
 };
@@ -109,44 +110,6 @@ app.get("/api/getAllActiveMentors", async (req, res) => {
   return res.json({users: mentors});
 });
 
-app.post("/api/acceptMentoree/:mentoreeId", authenticateToken, async (req, res) => {
-  let currUser = req.user;
-  const {mentoreeId} = req.params;
-  let user = await userCollection.findOne({_id: currUser._id});
-  user["IncomingRequests"] = user["IncomingRequests"].filter(request => request.toString() != mentoreeId);
-  user["Mentorees"].push(new ObjectId(mentoreeId));
-  let updated = await userCollection.findOneAndReplace({_id: currUser._id}, user);
-  if(!updated){
-    return res.status(403).json({message: "Error updating collection"});
-  }
-  let mentoree = await userCollection.findOne({_id: new ObejctId(mentoreeId)});
-  mentoree["OutgoingRequests"] = user["OutgoingRequests"].filter(request => request != currUser._id);
-  mentoree["Mentors"].push(currUser._id);
-  let updatedMentoree = await userCollection.findOneAndReplace({_id: new ObjectId(mentoreeId)}, mentoree);
-  if(!updatedMentoree){
-    return res.status(403).json({message: "Error updating collection"});
-  }
-  return res.json({message: "Update Ok"});
-});
-
-app.post("/api/rejectMentoree/:mentoreeId", authenticateToken, async (req, res) => {
-  let currUser = req.user;
-  const {mentoreeId} = req.params;
-  let user = await userCollection.findOne({_id: currUser._id});
-  user["IncomingRequests"] = user["IncomingRequests"].filter(request => request.toString() != mentoreeId);
-  let updated = await userCollection.findOneAndReplace({_id: currUser._id}, user);
-  if(!updated){
-    return res.status(403).json({message: "Error updating collection"});
-  }
-  let mentoree = await userCollection.findOne({_id: new ObejctId(mentoreeId)});
-  mentoree["OutgoingRequests"] = user["OutgoingRequests"].filter(request => request != currUser._id);
-  let updatedMentoree = await userCollection.findOneAndReplace({_id: new ObjectId(mentoreeId)}, mentoree);
-  if(!updatedMentoree){
-    return res.status(403).json({message: "Error updating collection"});
-  }
-  return res.json({message: "Update Ok"});
-});
-
 app.get("/api/getCurrentMentors", authenticateToken, async (req, res) => {
   let currUser = req.user;
   let userObj = await userCollection.findOne({_id: new ObjectId(currUser._id)});
@@ -170,6 +133,70 @@ app.get("/api/getCurrentMentorees", authenticateToken, async (req, res) => {
   }
   let mentorObjs = await userCollection.find({_id: {$in: mentors}});
   return res.json({mentors: mentorObjs});
+});
+
+app.post("/api/sendRequest/:id", authenticateToken, async (req, res) => {
+  const {id} = req.params;
+  let currUser = req.user;
+  let user = await userCollection.findOne({_id: new ObjectId(currUser._id)});
+  user["OutgoingRequests"].push(new ObjectId(id));
+  let requestedUser = await userCollection.findOne({_id: new Object(id)});
+  requestedUser["IncomingRequests"].push(new ObjectId(currUser._id));
+  let updatedCurrUser = await userCollection.findOneAndReplace({_id: new ObjectId(currUser._id)}, user);
+  let updatedReqUser = await userCollection.findOneAndReplace({_id: new ObjectId(id)}, requestedUser);
+  return res.json({message: "Request Sent"});
+});
+
+app.get("/api/getRequests", authenticateToken, async (req, res) => {
+  let currUser = req.user;
+  let user = await userCollection.findOne({_id: new ObjectId(currUser._id)});
+  return res.json({requests: user["IncomingRequests"]});
+});
+
+app.get("/api/profile", authenticateToken, async (req, res) => {
+  let currUser = req.user;
+  let user = await userCollection.findOne({_id: new ObjectId(currUser._id)});
+  return res.json({profile: user});
+});
+
+
+
+app.post("/api/acceptMentoree/:mentoreeId", authenticateToken, async (req, res) => {
+  let currUser = req.user;
+  const {mentoreeId} = req.params;
+  let user = await userCollection.findOne({_id: new ObjectId(currUser._id)});
+  user["IncomingRequests"] = user["IncomingRequests"].filter(request => request.toString() != mentoreeId);
+  user["Mentorees"].push(new ObjectId(mentoreeId));
+  let updated = await userCollection.findOneAndReplace({_id: currUser._id}, user);
+  if(!updated){
+    return res.status(403).json({message: "Error updating collection"});
+  }
+  let mentoree = await userCollection.findOne({_id: new ObjectId(mentoreeId)});
+  mentoree["OutgoingRequests"] = user["OutgoingRequests"].filter(request => request != currUser._id);
+  mentoree["Mentors"].push(new ObjectId(currUser._id));
+  let updatedMentoree = await userCollection.findOneAndReplace({_id: new ObjectId(mentoreeId)}, mentoree);
+  if(!updatedMentoree){
+    return res.status(403).json({message: "Error updating collection"});
+  }
+  return res.json({message: "Update Ok"});
+});
+
+app.post("/api/rejectMentoree/:mentoreeId", authenticateToken, async (req, res) => {
+  let currUser = req.user;
+  const {mentoreeId} = req.params;
+  let user = await userCollection.findOne({_id: new ObjectId(currUser._id)});
+  user["IncomingRequests"] = user["IncomingRequests"].filter(request => request.toString() != mentoreeId);
+  let updated = await userCollection.findOneAndReplace({_id: currUser._id}, user);
+  if(!updated){
+    return res.status(403).json({message: "Error updating collection"});
+  }
+  let mentoree = await userCollection.findOne({_id: new ObjectId(mentoreeId)});
+  mentoree["OutgoingRequests"] = user["OutgoingRequests"].filter(request => request != currUser._id);
+  let updatedMentoree = await userCollection.findOneAndReplace({_id: new ObjectId(mentoreeId)}, mentoree);
+  if(!updatedMentoree){
+    return res.status(403).json({message: "Error updating collection"});
+  }
+  return res.json({message: "Update Ok"});
 });
 
 const PORT = process.env.PORT || 5000;
