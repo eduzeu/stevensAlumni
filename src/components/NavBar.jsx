@@ -21,6 +21,8 @@ function NavBar() {
           <NavLink to="/database" className="nav-item">Directory</NavLink>
           <NavLink to="/profile" className="nav-item">Profile</NavLink>
           <NavLink to="/messages" className="nav-item">Messages</NavLink>
+          <NavLink to="/logout" className="nav-item">Log out</NavLink>
+
         </nav>
       </div>
     </>

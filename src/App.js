@@ -8,7 +8,7 @@ import Messages from "./components/Messages";
 import Login from "./components/Login";
 import NavBar from "./components/NavBar";
 import CreateAccount from './components/CreateAccount';
-
+import LogOut from './components/LogOut';
 function App() {
 
   return (
@@ -54,7 +54,7 @@ function App() {
             </>
           } />
           <Route path="/createaccount" element={<CreateAccount />} /> 
-
+          <Route path="/logout" element={<LogOut/>} />
         </Routes>
       </div>
     </Router>
