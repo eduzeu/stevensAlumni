@@ -4,7 +4,6 @@ import "../App.css";
 import { MentBox } from "./components";
 
 function Mentorship() {
-  console.log(sessionStorage.sessionToken);
   const token = sessionStorage.sessionToken;
 
   const [activeSection, setActiveSection] = useState(null);
@@ -14,23 +13,30 @@ function Mentorship() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Load pending mentors on mount
+  // Load current mentors from backend on mount
   useEffect(() => {
-    const storedPending = localStorage.getItem("pendingMentors");
-    if (storedPending) {
-      setPendingMentors(JSON.parse(storedPending));
-    }
+    const fetchCurrentMentors = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/getCurrentMentors", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-    const storedCurrent = localStorage.getItem("currentMentors");
-    if (storedCurrent) {
-      setCurrentMentors(JSON.parse(storedCurrent));
-    }
-  }, []);
+        if (!response.ok) throw new Error("Failed to fetch current mentors");
 
-  // Save pending mentors on update
-  useEffect(() => {
-    localStorage.setItem("pendingMentors", JSON.stringify(pendingMentor));
-  }, [pendingMentor]);
+        const data = await response.json();
+        setCurrentMentors(data.mentors || []);
+      } catch (err) {
+        setError("Error loading current mentors.");
+        console.error(err);
+      }
+    };
+
+    fetchCurrentMentors();
+  }, [token]);
 
   // Fetch pending mentors when active section is 'pending'
   useEffect(() => {
@@ -74,7 +80,6 @@ function Mentorship() {
   };
 
   const handlePendingMentorClick = async (mentor, id, token) => {
-    console.log(mentor, id, token);
     try {
       const response = await fetch(`http://localhost:5000/api/sendRequest/${id}`, {
         method: "POST",

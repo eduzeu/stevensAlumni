@@ -101,7 +101,7 @@ app.get("/api/getAllMentors", authenticateToken, async (req, res) => {
   let currUser = await userCollection.findOne({_id: new ObjectId(user._id)});
   let excludedIds = [...currUser["OutgoingRequests"], ...currUser["Mentors"], new ObjectId(user._id)];
   let allUsers = await userCollection.find({_id: {$nin: excludedIds}}).toArray();
-  allUsers = allUsers.filter(oneUser => oneUser._id )
+  allUsers = allUsers.filter(oneUser => oneUser["Interested in Mentoring?"] == true);
   return res.json({users: allUsers});
 });
 
@@ -132,7 +132,7 @@ app.get("/api/getCurrentMentors", authenticateToken, async (req, res) => {
   if(mentors.length < 1){
     return res.json({mentors: []});
   }
-  let mentorObjs = await userCollection.find({_id: {$in: mentors}});
+  let mentorObjs = await userCollection.find({_id: {$in: mentors}}).toArray();
   return res.json({mentors: mentorObjs});
 });
 
@@ -172,6 +172,7 @@ app.get("/api/getRequests", authenticateToken, async (req, res) => {
 app.get("/api/profile", authenticateToken, async (req, res) => {
   let currUser = req.user;
   let user = await userCollection.findOne({_id: new ObjectId(currUser._id)});
+  console.log(user);
   return res.json({profile: user});
 });
 
@@ -181,15 +182,19 @@ app.post("/api/acceptMentoree/:mentoreeId", authenticateToken, async (req, res) 
   let currUser = req.user;
   const {mentoreeId} = req.params;
   let user = await userCollection.findOne({_id: new ObjectId(currUser._id)});
+  console.log(user);
   user["IncomingRequests"] = user["IncomingRequests"].filter(request => request.toString() != mentoreeId);
   user["Mentorees"].push(new ObjectId(mentoreeId));
+  console.log(user);
   let updated = await userCollection.findOneAndReplace({_id: new ObjectId(currUser._id)}, user);
   if(!updated){
     return res.status(403).json({message: "Error updating collection"});
   }
   let mentoree = await userCollection.findOne({_id: new ObjectId(mentoreeId)});
+  console.log(mentoree);
   mentoree["OutgoingRequests"] = user["OutgoingRequests"].filter(request => request != currUser._id);
   mentoree["Mentors"].push(new ObjectId(currUser._id));
+  console.log(mentoree);
   let updatedMentoree = await userCollection.findOneAndReplace({_id: new ObjectId(mentoreeId)}, mentoree);
   if(!updatedMentoree){
     return res.status(403).json({message: "Error updating collection"});
