@@ -20,7 +20,7 @@ function NavBar() {
           <NavLink to="/mentorship" className="nav-item">Mentorship</NavLink>
           <NavLink to="/database" className="nav-item">Directory</NavLink>
           <NavLink to="/profile" className="nav-item">Profile</NavLink>
-          <NavLink to="/messages" className="nav-item">Messages</NavLink>
+          <NavLink to="/messages" className="nav-item">Mentor Request</NavLink>
           <NavLink to="/logout" className="nav-item">Log out</NavLink>
 
         </nav>

@@ -99,11 +99,18 @@ app.get("/api/getAllMentors", authenticateToken, async (req, res) => {
   let user = req.user;
   console.log(user);
   let currUser = await userCollection.findOne({_id: new ObjectId(user._id)});
-  let excludedIds = [...currUser["OutgoingRequests"], ...currUser["Mentors"]];
+  let excludedIds = [...currUser["OutgoingRequests"], ...currUser["Mentors"], new ObjectId(user._id)];
   let allUsers = await userCollection.find({_id: {$nin: excludedIds}}).toArray();
   allUsers = allUsers.filter(oneUser => oneUser._id )
   return res.json({users: allUsers});
 });
+
+app.get("/api/getAllPending", authenticateToken, async (req, res) => {
+  let user = req.user;
+  let currUser = await userCollection.findOne({_id: new ObjectId(user._id)});
+  let pending = await userCollection.find({_id: {$in: currUser["OutgoingRequests"]}}).toArray();
+  return res.json({users: pending});
+})
 
 app.get("/api/getAllUsers", async (req, res) => {
   let allUsers = await userCollection.find({}).toArray();
@@ -142,10 +149,12 @@ app.get("/api/getCurrentMentorees", authenticateToken, async (req, res) => {
 
 app.post("/api/sendRequest/:id", authenticateToken, async (req, res) => {
   const {id} = req.params;
+  console.log(id);
   let currUser = req.user;
   let user = await userCollection.findOne({_id: new ObjectId(currUser._id)});
   user["OutgoingRequests"].push(new ObjectId(id));
-  let requestedUser = await userCollection.findOne({_id: new Object(id)});
+  let requestedUser = await userCollection.findOne({_id: new ObjectId(id)});
+  console.log(requestedUser);
   requestedUser["IncomingRequests"].push(new ObjectId(currUser._id));
   let updatedCurrUser = await userCollection.findOneAndReplace({_id: new ObjectId(currUser._id)}, user);
   let updatedReqUser = await userCollection.findOneAndReplace({_id: new ObjectId(id)}, requestedUser);
@@ -155,7 +164,9 @@ app.post("/api/sendRequest/:id", authenticateToken, async (req, res) => {
 app.get("/api/getRequests", authenticateToken, async (req, res) => {
   let currUser = req.user;
   let user = await userCollection.findOne({_id: new ObjectId(currUser._id)});
-  return res.json({requests: user["IncomingRequests"]});
+  console.log(user["IncomingRequests"]);
+  let fuck = await userCollection.find({_id: {$in: user["IncomingRequests"]}}).toArray();
+  return res.json({requests: fuck});
 });
 
 app.get("/api/profile", authenticateToken, async (req, res) => {
@@ -172,7 +183,7 @@ app.post("/api/acceptMentoree/:mentoreeId", authenticateToken, async (req, res) 
   let user = await userCollection.findOne({_id: new ObjectId(currUser._id)});
   user["IncomingRequests"] = user["IncomingRequests"].filter(request => request.toString() != mentoreeId);
   user["Mentorees"].push(new ObjectId(mentoreeId));
-  let updated = await userCollection.findOneAndReplace({_id: currUser._id}, user);
+  let updated = await userCollection.findOneAndReplace({_id: new ObjectId(currUser._id)}, user);
   if(!updated){
     return res.status(403).json({message: "Error updating collection"});
   }
