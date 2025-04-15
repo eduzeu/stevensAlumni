@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { MessageBox } from "./Messages";
@@ -10,7 +10,7 @@ function Login() {
     email: "",
     password: ""
   });
-  
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -31,38 +31,38 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/login", formData, {timeout: 5000});
+      const response = await axios.post("http://localhost:5000/api/login", formData, { timeout: 5000 });
       console.log(response); // Success message
-      alert("Logged in successfully!");
       const token = response.data.token;
       sessionStorage.setItem('sessionToken', token);
       console.log(sessionStorage.getItem('sessionToken'));
+      navigate("/home");
     } catch (error) {
       console.error("There was an error logging in:", error.response.data.message);
       alert("Error logging in: " + error.response.data.message); // Display detailed error message
     }
   }
 
-return (
-<Center>
-<MessageBox>
-  <Form>
-    <Title>Sign In</Title>
-      <Label>Email</Label>
-        <Input
-          type="text"
-          name="email"
-          placeholder="Enter your email"
-          value={formData.email}
-          onChange={handleChange}
+  return (
+    <Center>
+      <MessageBox>
+        <Form>
+          <Title>Sign In</Title>
+          <Label>Email</Label>
+          <Input
+            type="text"
+            name="email"
+            placeholder="Enter your email"
+            value={formData.email}
+            onChange={handleChange}
           />
-      <Label>Password</Label>
-      <Input
+          <Label>Password</Label>
+          <Input
             type="password"
             name="password"
             placeholder="Enter your password"
             value={formData.password}
-            onChange={handleChange}/>
+            onChange={handleChange} />
           <SignInButton type="button" onClick={handleLogin}>Sign In</SignInButton>
           <CreateAccountButton type="button" onClick={handleCreateAccount}> Create an account</CreateAccountButton>
         </Form>

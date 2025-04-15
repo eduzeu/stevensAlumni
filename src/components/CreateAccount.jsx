@@ -4,8 +4,12 @@ import axios from "axios"; // Import axios
 import { MessageBox } from "./Messages";
 import { Center } from "./Messages";
 import { Form, Label, Input, Title } from "./Login";
+import { useNavigate } from "react-router";
+
 
 function CreateAccount() {
+
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
     password: "",
@@ -35,12 +39,16 @@ function CreateAccount() {
     if (formData.password !== formData.confirmPassword) {
       setErrorMessage("Passwords do not match");
       return;
+
     }
+
 
     try {
       const response = await axios.post("http://localhost:5000/api/createAccount", formData);
       console.log(response.data.message); // Success message
       alert("Account created successfully!");
+      navigate("/")
+
     } catch (error) {
       console.error("There was an error creating the account:", error.response.data);
       alert("Error creating account: " + error.response.data.message); // Display detailed error message
@@ -142,7 +150,7 @@ function CreateAccount() {
             value={formData.mentoring}
             onChange={handleChange}
           />
-          <SubmitButton onClick={handleSubmitButton}>Submit</SubmitButton>
+          <SubmitButton onClick={handleSubmitButton}>Submit</SubmitButton >
         </Form>
       </MessageBox>
     </Center>
