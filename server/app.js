@@ -52,7 +52,7 @@ app.post("/api/login", async (req, res) => {
 });
 
 app.post("/api/createAccount", async (req, res) => {
-  const {
+  let {
     email,
     password,
     fullName,
@@ -71,6 +71,12 @@ app.post("/api/createAccount", async (req, res) => {
   let hashedPass = await bcrypt.hash(password, saltrounds);
   let today = new Date();
   today.setHours(0, 0, 0, 0);
+  if(mentoring == 'false'){
+    mentoring = false;
+  }
+  else if(mentoring == 'true'){
+    mentoring = true;
+  }
   let userObj = {
     "Full Name": fullName,
     "Graduation Year": gradYear,

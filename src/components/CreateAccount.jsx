@@ -143,13 +143,15 @@ function CreateAccount() {
             onChange={handleChange}
           />
           <Label>Mentoring</Label>
-          <Input
-            type="text"
+          <select
             name="mentoring"
-            placeholder="Enter yes if you are willing to mentor, no otherwise"
             value={formData.mentoring}
             onChange={handleChange}
-          />
+          >
+            <option value="">Please select an option</option>
+            <option value={true}>Yes</option>
+            <option value={false}>No</option>
+          </select>
           <SubmitButton onClick={handleSubmitButton}>Submit</SubmitButton >
         </Form>
       </MessageBox>
