@@ -50,7 +50,7 @@ function Messages() {
 
       // Remove from requests list
       setRequests((prev) => prev.filter((r) => r._id !== id));
-      alert("succesfully accepted mentor!")
+      alert("Succesfully accepted mentoree!")
     } catch (err) {
       console.error(err);
     }
